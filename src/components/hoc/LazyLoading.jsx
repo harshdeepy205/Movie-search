@@ -12,7 +12,6 @@
 const LazyLoading = props => {
 
     const observer = new IntersectionObserver(entries => {
-
         entries.forEach(entry => {
             if (entry.isIntersecting && !props.loading) {
                 observer.unobserve(entry.target);

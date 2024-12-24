@@ -1,55 +1,59 @@
 import React, { useEffect, useState } from 'react'
 import NavBar from '../../components/Navbar/Nav'
 import MovieCard from '../../components/Cards/MovieCard';
+import LazyLoading from '../../components/hoc/LazyLoading';
 
 const Home = () => {
+    const targetRef = React.useRef(null);
+    const [castData, setCastData] = useState([]);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
 
-  const [castData, setCastData] = useState(null);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // State to track loading status
+    useEffect(() => {
+        fetchData(pageNumber);
+    }, []);
 
+    const fetchData = async (pnum) => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://www.omdbapi.com/?apikey=7b49ba7b&s=avengers&page=${pnum}`);
+            const data = await response.json();
+            setCastData(prevData => [...prevData, ...data.Search]);
+        } catch (error) {
+            console.error("API fetch error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  useEffect(() => {
-    fetch2();
-  }, []);
+    const handleLazyLoadingScroll = () => {
+        setPageNumber(prevPage => prevPage + 1);
+        fetchData(pageNumber + 1);
+    };
 
-
-  const fetch2 = async () => {
-    setIsLoading(true); // Set loading to true when API call starts
-    try {
-      const apiUrl = "http://www.omdbapi.com/?apikey=7b49ba7b&s=avengers&page=1";
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      console.log(data, "data")
-      setCastData(data); // Store response in castData
-    } catch (error) {
-      console.error("API fetch error:", error);
-    } finally {
-      setIsLoading(false); // Set loading to false when API call completes
-    }
-  };
-
-  return (
-    <>
-      <NavBar />
-      {isLoading ? (
-        <p>Loading...</p> // Show loading indicator
-      ) : (
-        <div>
-          <h1>Movie Results</h1>
-          <div>
-            {castData && castData.Search ? (
-              castData.Search.map((movie, index) => (
-                <MovieCard movieDetails={movie} key={index} />
-              ))
-            ) : (
-              <p>No results found.</p>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
+    return (
+        <>
+            <NavBar />
+            <div>
+                <h1>Movie Results</h1>
+                <div className="card-wrapper">
+                    {castData.map((movie, index) => (
+                        <MovieCard key={index} movieDetails={movie} />
+                    ))}
+                    <div ref={targetRef} id="last-entry" />
+                </div>
+                <LazyLoading
+                    target={targetRef.current}
+                    loading={isLoading}
+                    callback={handleLazyLoadingScroll}
+                    options={{ threshold: 1 }}
+                    observe={!!targetRef.current}
+                >
+                    {isLoading && <p>Loading...</p>}
+                </LazyLoading>
+            </div>
+        </>
+    );
+};
 
 export default Home
