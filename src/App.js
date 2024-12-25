@@ -10,6 +10,7 @@ function App() {
 	const [pageNumber, setPageNumber] = useState(1);
 	const [userQuery, setUserQuery] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [isError, setIsError] = useState(null);
 
 	const fetchData = async (pnum = 1, query = userQuery) => {
 		setUserQuery(query);
@@ -17,7 +18,11 @@ function App() {
 		try {
 			const response = await fetch(`http://www.omdbapi.com/?apikey=7b49ba7b&s=${query}&page=${pnum}`);
 			const data = await response.json();
-			setCastData(prevData => (pnum === 1 ? data?.Search : [...prevData, ...data?.Search])); // Reset on new search
+			if(data.Response === 'True') {
+				setCastData(prevData => (pnum === 1 ? data?.Search : [...prevData, ...data?.Search])); // Reset on new search
+			} else {
+				setIsError("Something went wrong!")
+			}
 		} catch (error) {
 			console.error("API fetch error:", error);
 		} finally {
@@ -28,7 +33,7 @@ function App() {
 	return (
 		<Router>
 			<div className="App">
-				<Navbar fetchData={fetchData} setPageNumber={setPageNumber} />
+				<Navbar fetchData={fetchData} setPageNumber={setPageNumber} setIsError={setIsError}/>
 				<Routes>
 					<Route
 						path="/"
@@ -40,6 +45,7 @@ function App() {
 								pageNumber={pageNumber}
 								isLoading={isLoading}
 								userQuery={userQuery}
+								isError={isError}
 							/>
 						}
 					/>

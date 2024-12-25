@@ -60,7 +60,7 @@ const MovieCard = (props) => {
                         <p className="card-text">{movieDetails.Year}</p>
                     </div>
                     {!isFavoriteCard && (
-                        <button className="btn btn-primary" id="liveToastBtn" onClick={addToFavorite}>
+                        <button className="btn btn-dark" id="liveToastBtn" onClick={addToFavorite}>
                             Add to Favorite
                         </button>
                     )}

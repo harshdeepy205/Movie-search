@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom';
 
 const Nav = (props) => {
-    const { fetchData, setPageNumber } = props
+    const { fetchData, setPageNumber, setIsError } = props
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
@@ -19,15 +19,16 @@ const Nav = (props) => {
     useEffect(() => {
         if (debouncedSearchTerm) {
             fetchData(1, debouncedSearchTerm); // Fetch with search term
-            setPageNumber(1)
+            setPageNumber(1);
+            setIsError(null)
         }
     }, [debouncedSearchTerm]);
 
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar navbar-expand-lg bg-black">
             <div className="container-fluid px-4">
                 <div className='d-flex align-items-center gap-1 mobile-search'>
-                    <a className="navbar-brand m-0" href="#">Movies</a>
+                    <a className="navbar-brand m-0 text-light" href="#">Movies</a>
                     <div className='search-container d-flex justify-content-center my-3 d-none'>
                         <div className='d-flex gap-1 align-items-center'>
                             <input className="form-control me-2" type="search" placeholder="Search Movie/Series" aria-label="Search"
@@ -42,10 +43,10 @@ const Nav = (props) => {
                 </button>
                 <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul className="navbar-nav align-items-center gap-1">
-                        <li className="nav-item">
+                        <li className="nav-item text-light">
                             <NavLink
                                 className={({ isActive }) =>
-                                    `nav-link ${isActive ? 'active' : ''}`
+                                    ` text-light nav-link ${isActive ? 'active' : ''}`
                                 }
                                 to="/"
                                 end
@@ -53,10 +54,10 @@ const Nav = (props) => {
                                 Home
                             </NavLink>
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-item text-light">
                             <NavLink
                                 className={({ isActive }) =>
-                                    `nav-link ${isActive ? 'active' : ''}`
+                                    ` text-light nav-link ${isActive ? 'active' : ''}`
                                 }
                                 to="/favorites"
                             >
